@@ -6,43 +6,47 @@ import { FlatItem } from '../utils/tree-utils';
   providedIn: 'root'
 })
 export class MenuService {
-  // 模拟接口返回的平级数据
+  // Mock flat menu data (simulated API response)
   private flatMenuData: FlatItem[] = [
-    // 一级菜单
+    // Primary menu items
     { id: '1', parentId: null, label: 'Dashboard', icon: 'pi pi-home', route: '/' },
-    { id: '2', parentId: null, label: 'Users', icon: 'pi pi-users', route: '/users' },
-    { id: '3', parentId: null, label: 'Orders', icon: 'pi pi-file-text', route: '/orders' },
-    { id: '4', parentId: null, label: 'Products', icon: 'pi pi-box' },
-    { id: '5', parentId: null, label: 'Reports', icon: 'pi pi-chart-bar', route: '/reports' },
-    { id: '6', parentId: null, label: 'Settings', icon: 'pi pi-settings', route: '/settings' },
+    { id: '2', parentId: null, label: 'Factory', icon: 'pi pi-box', route: '/orders' },
+    { id: '3', parentId: null, label: 'New House', icon: 'pi pi-building' },
+    { id: '4', parentId: null, label: 'Second House', icon: 'pi pi-search', route: '/reports' },
+    { id: '5', parentId: null, label: 'Rent House', icon: 'pi pi-users', route: '/settings' },
+    { id: '6', parentId: null, label: 'Advertising', icon: 'pi pi-volume-up', route: '/settings' },
+    { id: '7', parentId: null, label: 'Analyse', icon: 'pi pi-chart-bar', route: '/settings' },
+
+    // Secondary menu items (Factory)
+    { id: '2-1', parentId: '2', label: 'Factory List', route: '/products' },
+    { id: '2-2', parentId: '2', label: 'Factory Orders', route: '/products/categories' },
+    { id: '2-3', parentId: '2', label: 'Regional', route: '/products/categories/electronics' },
+
+    // Secondary menu items (New House)
+    { id: '3-1', parentId: '3', label: 'Property Developers', route: '/products' },
+    { id: '3-2', parentId: '3', label: 'Real Estate', route: '/products/categories' },
     
-    // 二级菜单 (Products 的子菜单)
-    { id: '4-1', parentId: '4', label: 'All Products', route: '/products' },
-    { id: '4-2', parentId: '4', label: 'Categories', route: '/products/categories' },
-    { id: '4-3', parentId: '4', label: 'Inventory', route: '/products/inventory' },
-    
-    // 三级菜单 (Categories 的子菜单)
-    { id: '4-2-1', parentId: '4-2', label: 'Electronics', route: '/products/categories/electronics' },
-    { id: '4-2-2', parentId: '4-2', label: 'Clothing', route: '/products/categories/clothing' },
-    { id: '4-2-3', parentId: '4-2', label: 'Books', route: '/products/categories/books' },
-    
-    // 四级菜单 (Electronics 的子菜单)
-    { id: '4-2-1-1', parentId: '4-2-1', label: 'Smartphones', route: '/products/categories/electronics/smartphones' },
-    { id: '4-2-1-2', parentId: '4-2-1', label: 'Laptops', route: '/products/categories/electronics/laptops' },
-    { id: '4-2-1-3', parentId: '4-2-1', label: 'Tablets', route: '/products/categories/electronics/tablets' },
-    
-    // Users 的子菜单
-    { id: '2-1', parentId: '2', label: 'User List', route: '/users/list' },
-    { id: '2-2', parentId: '2', label: 'Roles', route: '/users/roles' },
-    { id: '2-3', parentId: '2', label: 'Permissions', route: '/users/permissions' },
+    // Tertiary menu items (New House > Real Estate)
+    { id: '3-2-1', parentId: '3-2', label: 'Regional', route: '/products/categories/electronics' },
+    { id: '3-2-2', parentId: '3-2', label: 'Housing Resource', route: '/products/categories/clothing' },
+    { id: '3-2-3', parentId: '3-2', label: 'Unoccupied', route: '/products/categories/unoccupied' },
+
+    // Secondary menu items (Second House)
+    { id: '4-1', parentId: '4', label: 'Real Estate', route: '/products' },
+    { id: '4-2', parentId: '4', label: 'Regional', route: '/products/categories' },
+
+    // Secondary menu items (Rent House)
+    { id: '5-1', parentId: '5', label: 'Real Estate', route: '/products' },
+    { id: '5-2', parentId: '5', label: 'Regional', route: '/products/categories' },
+
   ];
 
   /**
-   * 模拟接口调用，返回平级数据
+   * Simulate API call to get flat menu data
    */
   getFlatMenuData(): Promise<FlatItem[]> {
     return new Promise(resolve => {
-      // 模拟网络延迟
+      // Simulate network delay (500ms)
       setTimeout(() => {
         resolve([...this.flatMenuData]);
       }, 500);
