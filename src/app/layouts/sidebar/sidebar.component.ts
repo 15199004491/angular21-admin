@@ -71,6 +71,25 @@ import { convertFlatToTree, TreeItem } from '../../utils/tree-utils';
   styles: [`
     aside {
       top: 64px;
+      max-height: calc(100vh - 64px); /* Subtract header height */
+      overflow-y: auto; /* Enable vertical scrolling */
+    }
+    
+    aside::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    aside::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    
+    aside::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 3px;
+    }
+    
+    aside::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
     }
     
     .rotate-180 {
@@ -96,12 +115,7 @@ export class SidebarComponent implements OnInit {
     const flatData = await this.menuService.getFlatMenuData();
     this.menuItems = convertFlatToTree(flatData);
     
-    // Expand all items with children by default
-    // this.menuItems.forEach(item => {
-    //   if (item.children?.length) {
-    //     this.expandedItems.add(item.id);
-    //   }
-    // });
+    // Menu items are collapsed by default (expandedItems remains empty)
     
     // Trigger change detection manually
     this.cdr.detectChanges();
