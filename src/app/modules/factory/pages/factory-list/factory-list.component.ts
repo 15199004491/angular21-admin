@@ -13,6 +13,8 @@ import { MessageService } from 'primeng/api';
 import { FactoryService } from '../../services/factory.service';
 import { Factory } from '../../models/factory.model';
 import { FactoryAddDialogComponent } from './factory-add-dialog.component';
+import { FactoryEditDialogComponent } from './factory-edit-dialog.component';
+import { FactoryDetailDialogComponent } from './factory-detail-dialog.component';
 
 @Component({
     template: `
@@ -66,12 +68,13 @@ import { FactoryAddDialogComponent } from './factory-add-dialog.component';
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
                         <th style="width:3rem">ID</th>
-                        <th style="width:25%">Factory Name</th>
-                        <th style="width:15%">Location</th>
-                        <th style="width:15%">Status</th>
-                        <th style="width:15%">Employees</th>
-                        <th style="width:15%">Established</th>
-                        <th style="width:10%">Verified</th>
+                        <th style="width:20%">Factory Name</th>
+                        <th style="width:12%">Location</th>
+                        <th style="width:12%">Status</th>
+                        <th style="width:12%">Employees</th>
+                        <th style="width:12%">Established</th>
+                        <th style="width:8%">Verified</th>
+                        <th style="width:10%">Actions</th>
                     </tr>
                 </ng-template>
                 <ng-template #body let-factory>
@@ -83,7 +86,11 @@ import { FactoryAddDialogComponent } from './factory-add-dialog.component';
                         <td>{{ factory.name }}</td>
                         <td>{{ factory.location }}</td>
                         <td>
-                            <p-tag [value]="factory.status" [severity]="factory.status === 'active' ? 'success' : factory.status === 'maintenance' ? 'warn' : 'danger'" />
+                            <p-tag 
+                                [value]="factory.status" 
+                                [severity]="factory.status === 'active' ? 'success' : factory.status === 'maintenance' ? 'warn' : 'danger'"
+                                [style]="factory.status === 'active' ? { color: '#10b981', backgroundColor: '#d1fae5' } : {}"
+                            />
                         </td>
                         <td>{{ factory.employeeCount.toLocaleString() }}</td>
                         <td>{{ factory.establishedYear }}</td>
@@ -96,11 +103,33 @@ import { FactoryAddDialogComponent } from './factory-add-dialog.component';
                                 }"
                             ></i>
                         </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <p-button 
+                                    label="Edit" 
+                                    icon="pi pi-file-edit"
+                                    [rounded]="true" 
+                                    severity="success"
+                                    size="small"
+                                    (click)="showEditDialog(factory)"
+                                    [style]="{ backgroundColor: '#f0fdf4', color: '#16a34a', borderColor: '#bbf7d0' }"
+                                ></p-button>
+                                <p-button 
+                                    label="Detail" 
+                                    icon="pi pi-file"
+                                    [rounded]="true" 
+                                    severity="secondary"
+                                    size="small"
+                                    (click)="showDetailDialog(factory)"
+                                    [style]="{ backgroundColor: '#f9fafb', color: '#374151', borderColor: '#e5e7eb' }"
+                                ></p-button>
+                            </div>
+                        </td>
                     </tr>
                 </ng-template>
                 <ng-template #emptymessage>
                     <tr>
-                        <td colspan="8">No factories found.</td>
+                        <td colspan="9">No factories found.</td>
                     </tr>
                 </ng-template>
             </p-table>
@@ -111,9 +140,20 @@ import { FactoryAddDialogComponent } from './factory-add-dialog.component';
             [factory]="newFactory"
             (confirmed)="handleAddFactory($event)"
         ></factory-add-dialog>
+
+        <factory-edit-dialog 
+            [(visible)]="editDialogVisible" 
+            [factory]="selectedFactory"
+            (confirmed)="handleEditFactory($event)"
+        ></factory-edit-dialog>
+
+        <factory-detail-dialog 
+            [(visible)]="detailDialogVisible" 
+            [factory]="selectedFactory"
+        ></factory-detail-dialog>
     `,
     standalone: true,
-    imports: [CommonModule, SelectModule, IconFieldModule, InputIconModule, TableModule, TagModule, InputTextModule, FormsModule, ButtonModule, CheckboxModule, FactoryAddDialogComponent],
+    imports: [CommonModule, SelectModule, IconFieldModule, InputIconModule, TableModule, TagModule, InputTextModule, FormsModule, ButtonModule, CheckboxModule, FactoryAddDialogComponent, FactoryEditDialogComponent, FactoryDetailDialogComponent],
     providers: [FactoryService, MessageService]
 })
 export class FactoryListComponent implements OnInit {
@@ -124,7 +164,11 @@ export class FactoryListComponent implements OnInit {
     searchKeyword: string = '';
     searchField: string = '';
     selectedFactories: Factory[] = [];
+    
     addDialogVisible: boolean = false;
+    editDialogVisible: boolean = false;
+    detailDialogVisible: boolean = false;
+    selectedFactory: Factory | null = null;
 
     newFactory: Factory = {
         id: 0,
@@ -145,10 +189,13 @@ export class FactoryListComponent implements OnInit {
     ];
 
     ngOnInit() {
-        this.factoryService.getFactories().then((factories) => {
-            this.factories = factories;
-            this.loading = false;
-        });
+        this.loadFactories();
+    }
+
+    async loadFactories(): Promise<void> {
+        this.loading = true;
+        this.factories = await this.factoryService.getFactories();
+        this.loading = false;
     }
 
     search(table: Table) {
@@ -170,6 +217,7 @@ export class FactoryListComponent implements OnInit {
             const selectedIds = this.selectedFactories.map(f => f.id);
             this.factories = this.factories.filter(f => !selectedIds.includes(f.id));
             this.selectedFactories = [];
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Selected factories deleted successfully!' });
         }
     }
 
@@ -186,11 +234,30 @@ export class FactoryListComponent implements OnInit {
         this.addDialogVisible = true;
     }
 
+    showEditDialog(factory: Factory) {
+        this.selectedFactory = factory;
+        this.editDialogVisible = true;
+    }
+
+    showDetailDialog(factory: Factory) {
+        this.selectedFactory = factory;
+        this.detailDialogVisible = true;
+    }
+
     handleAddFactory(event: any) {
         const factory = event as Factory;
         const maxId = Math.max(...this.factories.map(f => f.id));
         factory.id = maxId + 1;
         this.factories.unshift(factory);
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Factory added successfully!' });
+    }
+
+    handleEditFactory(event: any) {
+        const updatedFactory = event as Factory;
+        const index = this.factories.findIndex(f => f.id === updatedFactory.id);
+        if (index !== -1) {
+            this.factories[index] = updatedFactory;
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Factory updated successfully!' });
+        }
     }
 }
