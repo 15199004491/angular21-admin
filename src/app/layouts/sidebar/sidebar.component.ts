@@ -1,13 +1,15 @@
 // src/app/layouts/sidebar/sidebar.component.ts
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { MenuService } from '../../services/menu.service';
 import { convertFlatToTree, TreeItem } from '../../utils/tree-utils';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <aside class="bg-gray-800 text-white w-64 min-h-screen fixed left-0 top-16">
       <!-- Logo -->
@@ -50,9 +52,9 @@ import { convertFlatToTree, TreeItem } from '../../utils/tree-utils';
                 <!-- Item without children (link) -->
                 @if (!item.children?.length) {
                   <a 
-                    [href]="item.route || '#'" 
+                    [routerLink]="item.route || '#'" 
                     class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors block"
-                    [class.bg-blue-600]="item.route === currentRoute"
+                    [class.bg-blue-600]="isActiveRoute(item.route)"
                   >
                     <span class="pi" [ngClass]="item.icon"></span>
                     <span>{{ item.label }}</span>
@@ -71,8 +73,8 @@ import { convertFlatToTree, TreeItem } from '../../utils/tree-utils';
   styles: [`
     aside {
       top: 64px;
-      max-height: calc(100vh - 64px); /* Subtract header height */
-      overflow-y: auto; /* Enable vertical scrolling */
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
     }
     
     aside::-webkit-scrollbar {
@@ -97,28 +99,74 @@ import { convertFlatToTree, TreeItem } from '../../utils/tree-utils';
     }
   `]
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   menuItems: TreeItem[] = [];
   expandedItems = new Set<string>();
   currentRoute = '/';
+  private routerSubscription: Subscription | null = null;
 
   constructor(
     private menuService: MenuService,
-    private cdr: ChangeDetectorRef // Change detector for manual change detection
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.loadMenu();
+    this.setupRouteListener();
+  }
+
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   async loadMenu(): Promise<void> {
     const flatData = await this.menuService.getFlatMenuData();
     this.menuItems = convertFlatToTree(flatData);
     
-    // Menu items are collapsed by default (expandedItems remains empty)
+    this.currentRoute = this.router.url;
+    this.expandParentMenu(this.currentRoute);
     
-    // Trigger change detection manually
     this.cdr.detectChanges();
+  }
+
+  setupRouteListener(): void {
+    this.routerSubscription = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.currentRoute = event.urlAfterRedirects;
+        this.expandParentMenu(this.currentRoute);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  isActiveRoute(route: string | undefined): boolean {
+    if (!route) return false;
+    return this.currentRoute === route;
+  }
+
+  expandParentMenu(currentRoute: string): void {
+    this.expandedItems.clear();
+    
+    const findAndExpandParent = (items: TreeItem[], targetRoute: string): boolean => {
+      for (const item of items) {
+        if (item.route === targetRoute) {
+          return true;
+        }
+        if (item.children && item.children.length > 0) {
+          const found = findAndExpandParent(item.children, targetRoute);
+          if (found) {
+            this.expandedItems.add(item.id);
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    
+    findAndExpandParent(this.menuItems, currentRoute);
   }
 
   toggleExpand(itemId: string): void {

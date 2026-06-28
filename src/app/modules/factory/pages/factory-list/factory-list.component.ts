@@ -119,7 +119,7 @@ import { FactoryAddDialogComponent } from './factory-add-dialog.component';
 export class FactoryListComponent implements OnInit {
     private factoryService = inject(FactoryService);
     private messageService = inject(MessageService);
-    factories!: Factory[];
+    factories: Factory[] = [];
     loading: boolean = true;
     searchKeyword: string = '';
     searchField: string = '';
