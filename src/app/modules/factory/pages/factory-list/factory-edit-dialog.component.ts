@@ -6,13 +6,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CheckboxModule } from 'primeng/checkbox';
 import { Factory } from '@/app/modules/factory/models/factory.model';
 import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
 
 @Component({
     selector: 'factory-edit-dialog',
     standalone: true,
-    imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule],
+    imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule, CheckboxModule],
     template: `
         <p-dialog 
             header="Edit Factory" 
@@ -20,6 +21,7 @@ import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/fact
             [modal]="true" 
             [style]="{ width: '35%' }"
             [focusTrap]="false"
+            (onHide)="close()"
         >
             <form #editForm="ngForm" (ngSubmit)="onSubmit(editForm)">
                 <div class="field mt-4">
@@ -125,11 +127,24 @@ import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/fact
                     }
                 </div>
 
-                <ng-template pTemplate="footer">
+                <div class="field mt-4">
+                    <div class="flex items-center gap-3" style="min-height: 38px;">
+                        <p-checkbox 
+                            id="editVerified" 
+                            name="verified" 
+                            [(ngModel)]="editFactory.verified"
+                            binary="true"
+                        />
+                        <span>Verified</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
                     <p-button 
                         label="Cancel" 
                         icon="pi pi-times" 
                         (click)="close()" 
+                        class="p-button-secondary"
                     />
                     <p-button 
                         label="Save" 
@@ -138,7 +153,7 @@ import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/fact
                         [disabled]="!editForm.valid"
                         severity="success"
                     />
-                </ng-template>
+                </div>
             </form>
         </p-dialog>
     `

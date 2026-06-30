@@ -149,7 +149,7 @@ import { factoryMock } from '@/app/modules/factory/services/factory.mock';
 
         <factory-detail-dialog 
             [(visible)]="detailDialogVisible" 
-            [factory]="selectedFactory"
+            [factory]="detailFactory"
         ></factory-detail-dialog>
     `,
     standalone: true,
@@ -169,6 +169,7 @@ export class FactoryListComponent implements OnInit {
     editDialogVisible: boolean = false;
     detailDialogVisible: boolean = false;
     selectedFactory: Factory | null = null;
+    detailFactory: Factory | null = null;
 
     newFactory: Factory = {
         id: 0,
@@ -241,7 +242,7 @@ export class FactoryListComponent implements OnInit {
     }
 
     showDetailDialog(factory: Factory) {
-        this.selectedFactory = factory;
+        this.detailFactory = factory;
         this.detailDialogVisible = true;
     }
 

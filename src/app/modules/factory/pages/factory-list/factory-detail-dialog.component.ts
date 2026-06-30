@@ -15,6 +15,7 @@ import { Factory } from '@/app/modules/factory/models/factory.model';
             [modal]="true" 
             [style]="{ width: '40%' }"
             [focusTrap]="false"
+            (onHide)="close()"
         >
             @if (factory) {
                 <div class="space-y-4">

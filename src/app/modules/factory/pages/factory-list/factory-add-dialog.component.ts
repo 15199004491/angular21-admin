@@ -1,13 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChild, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Factory } from '@/app/modules/factory/models/factory.model';
-import { regionMockData } from '@/app/modules/factory/mock/factory.mock';
+import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
 
 @Component({
     selector: 'factory-add-dialog',
@@ -15,7 +15,7 @@ import { regionMockData } from '@/app/modules/factory/mock/factory.mock';
     imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule],
     template: `
         <p-dialog header="Add New Factory" [(visible)]="visible" [modal]="true" [style]="{ width: '35%' }" [focusTrap]="false">
-            <form #addForm="ngForm" class="p-fluid">
+            <form #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" class="p-fluid">
                 <div class="field">
                     <label for="factoryName" class="block mb-2">* Factory Name</label>
                     <input 
@@ -118,12 +118,11 @@ import { regionMockData } from '@/app/modules/factory/mock/factory.mock';
                     }
                 </div>
 
+                <div class="flex justify-end gap-2 mt-6">
+                    <p-button label="Cancel" icon="pi pi-times" (click)="close()" class="p-button-secondary" />
+                    <p-button label="Confirm" icon="pi pi-check" type="submit" [disabled]="!addForm.form.valid" severity="success" />
+                </div>
             </form>
-
-            <ng-template pTemplate="footer">
-                <p-button label="Cancel" icon="pi pi-times" (click)="close()" />
-                <p-button label="Confirm" icon="pi pi-check" (click)="confirm()" [disabled]="!addForm.form.valid" />
-            </ng-template>
         </p-dialog>
     `
 })
@@ -136,11 +135,7 @@ export class FactoryAddDialogComponent implements OnInit, OnChanges {
     @Output() confirmed = new EventEmitter<Factory>();
 
     locations: { label: string; value: string }[] = [];
-    statusOptions = [
-        { label: 'Active', value: 'active' },
-        { label: 'Maintenance', value: 'maintenance' },
-        { label: 'Inactive', value: 'inactive' }
-    ];
+    statusOptions = factoryStatuses;
 
     private createEmptyFactory(): Factory {
         return {
@@ -177,8 +172,10 @@ export class FactoryAddDialogComponent implements OnInit, OnChanges {
         this.visibleChange.emit(false);
     }
 
-    confirm() {
-        this.confirmed.emit({ ...this.factory });
-        this.visibleChange.emit(false);
+    onSubmit(form: NgForm) {
+        if (form.valid) {
+            this.confirmed.emit({ ...this.factory });
+            this.close();
+        }
     }
 }
