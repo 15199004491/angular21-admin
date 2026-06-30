@@ -34,9 +34,11 @@ import { Factory } from '../../models/factory.model';
                         <span class="font-semibold">Status:</span>
                         <span 
                             class="px-2 py-1 rounded-full text-sm"
-                            [class.bg-green-100 text-green-800]="factory.status === 'active'"
-                            [class.bg-yellow-100 text-yellow-800]="factory.status === 'maintenance'"
-                            [class.bg-red-100 text-red-800]="factory.status === 'inactive'"
+                            [ngClass]="{
+                                'bg-green-100 text-green-800': factory.status === 'active',
+                                'bg-yellow-100 text-yellow-800': factory.status === 'maintenance',
+                                'bg-red-100 text-red-800': factory.status === 'inactive'
+                            }"
                         >
                             {{ factory.status }}
                         </span>

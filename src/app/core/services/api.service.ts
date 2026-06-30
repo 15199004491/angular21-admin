@@ -45,65 +45,21 @@ export class ApiService {
     return headers;
   }
 
-  get<T>(url: string, params?: Record<string, any>): Observable<ApiResponse<T>> {
-    const fullUrl = this.buildUrl(url);
-    const httpParams = this.buildParams(params);
-    return this.http.get<ApiResponse<T>>(fullUrl, { params: httpParams, headers: this.headers }).pipe(
-      timeout(this.timeoutMs),
-      catchError(this.handleError)
-    );
-  }
-
-  post<T>(url: string, body: any): Observable<ApiResponse<T>> {
-    const fullUrl = this.buildUrl(url);
-    return this.http.post<ApiResponse<T>>(fullUrl, body, { headers: this.headers }).pipe(
-      timeout(this.timeoutMs),
-      catchError(this.handleError)
-    );
-  }
-
-  put<T>(url: string, body: any): Observable<ApiResponse<T>> {
-    const fullUrl = this.buildUrl(url);
-    return this.http.put<ApiResponse<T>>(fullUrl, body, { headers: this.headers }).pipe(
-      timeout(this.timeoutMs),
-      catchError(this.handleError)
-    );
-  }
-
-  delete<T>(url: string): Observable<ApiResponse<T>> {
-    const fullUrl = this.buildUrl(url);
-    return this.http.delete<ApiResponse<T>>(fullUrl, { headers: this.headers }).pipe(
-      timeout(this.timeoutMs),
-      catchError(this.handleError)
-    );
-  }
-
-  getBlob(url: string, params?: Record<string, any>): Observable<Blob> {
-    const fullUrl = this.buildUrl(url);
-    const httpParams = this.buildParams(params);
-    return this.http.get(fullUrl, { 
-      params: httpParams, 
-      headers: this.headers,
-      responseType: 'blob' 
-    }).pipe(
-      timeout(this.timeoutMs * 5),
-      catchError(this.handleBlobError)
-    );
-  }
-
   private buildUrl(url: string): string {
+    const baseUrl = this.appConfig.apiBaseUrl;
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    return `${this.appConfig.apiBaseUrl}/${url}`;
+    return `${baseUrl}/${url.replace(/^\//, '')}`;
   }
 
   private buildParams(params?: Record<string, any>): HttpParams {
     let httpParams = new HttpParams();
     if (params) {
       Object.keys(params).forEach(key => {
-        if (params[key] !== undefined && params[key] !== null) {
-          httpParams = httpParams.set(key, String(params[key]));
+        const value = params[key];
+        if (value !== undefined && value !== null) {
+          httpParams = httpParams.set(key, String(value));
         }
       });
     }
@@ -129,12 +85,6 @@ export class ApiService {
 
     console.error(`API Error [${statusCode}]: ${errorMessage}`);
     return throwError(() => new ApiError(statusCode, errorMessage, error));
-  }
-
-  private handleBlobError = (error: HttpErrorResponse): Observable<never> => {
-    const errorInfo = this.getErrorMessage(error.status);
-    console.error(`Blob Error [${error.status}]: ${errorInfo.message}`);
-    return throwError(() => new ApiError(errorInfo.code, errorInfo.message, error));
   }
 
   private getErrorMessage(status: number): { code: number; message: string } {
@@ -189,11 +139,69 @@ export class ApiService {
     console.log('Rate limit exceeded - please wait before making more requests');
   }
 
-  getBaseUrl(): string {
-    return this.appConfig.apiBaseUrl;
-  }
+  async request<T>(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    url: string,
+    data?: any,
+    params?: Record<string, any>
+  ): Promise<T | null> {
+    const fullUrl = this.buildUrl(url);
+    const httpParams = this.buildParams(params);
 
-  setTimeout(ms: number): void {
-    this.timeoutMs = ms;
+    try {
+      let response: ApiResponse<T> | null = null;
+
+      switch (method.toUpperCase()) {
+        case 'GET':
+          response = await this.http.get<ApiResponse<T>>(fullUrl, { 
+            params: httpParams, 
+            headers: this.headers 
+          }).pipe(
+            timeout(this.timeoutMs),
+            catchError(this.handleError)
+          ).toPromise() || null;
+          break;
+        case 'POST':
+          response = await this.http.post<ApiResponse<T>>(fullUrl, data, { 
+            headers: this.headers 
+          }).pipe(
+            timeout(this.timeoutMs),
+            catchError(this.handleError)
+          ).toPromise() || null;
+          break;
+        case 'PUT':
+          response = await this.http.put<ApiResponse<T>>(fullUrl, data, { 
+            headers: this.headers 
+          }).pipe(
+            timeout(this.timeoutMs),
+            catchError(this.handleError)
+          ).toPromise() || null;
+          break;
+        case 'DELETE':
+          response = await this.http.delete<ApiResponse<T>>(fullUrl, { 
+            headers: this.headers 
+          }).pipe(
+            timeout(this.timeoutMs),
+            catchError(this.handleError)
+          ).toPromise() || null;
+          break;
+        default:
+          throw new Error(`Unsupported HTTP method: ${method}`);
+      }
+
+      if (response) {
+        if (response.success) {
+          return response.data;
+        } else {
+          console.error(`API Error [${response.code}]: ${response.message}`);
+        }
+      }
+      return null;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        console.error(`API Error [${error.statusCode}]: ${error.message}`);
+      }
+      return null;
+    }
   }
 }

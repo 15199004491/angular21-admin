@@ -1,5 +1,5 @@
 // src/app/pages/dashboard/dashboard.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService, StatCard, Order } from '../../services/dashboard.service';
 
@@ -64,10 +64,14 @@ export class DashboardComponent implements OnInit {
   stats: StatCard[] = [];
   recentOrders: Order[] = [];
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(
+    private dashboardService: DashboardService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   async ngOnInit() {
     this.stats = await this.dashboardService.getStats();
     this.recentOrders = await this.dashboardService.getRecentOrders();
+    this.cdr.detectChanges();
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, inject, ViewChild, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ViewChild, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Factory } from '../../models/factory.model';
-import { FactoryService } from '../../services/factory.service';
+import { regionMockData } from '../../mock/factory.mock';
 
 @Component({
     selector: 'factory-add-dialog',
@@ -128,8 +128,6 @@ import { FactoryService } from '../../services/factory.service';
     `
 })
 export class FactoryAddDialogComponent implements OnInit, OnChanges {
-    private factoryService = inject(FactoryService);
-    
     @Input() visible: boolean = false;
     @ViewChild('addForm') addForm: any;
     @Input() factory: Factory = this.createEmptyFactory();
@@ -157,7 +155,7 @@ export class FactoryAddDialogComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        this.locations = this.factoryService.getRegions().map(r => ({ label: r.name, value: r.name }));
+        this.locations = regionMockData.map(r => ({ label: r.name, value: r.name }));
     }
 
     ngOnChanges(changes: SimpleChanges) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -10,11 +10,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MessageService } from 'primeng/api';
-import { FactoryService } from '../../services/factory.service';
 import { Factory } from '../../models/factory.model';
 import { FactoryAddDialogComponent } from './factory-add-dialog.component';
 import { FactoryEditDialogComponent } from './factory-edit-dialog.component';
 import { FactoryDetailDialogComponent } from './factory-detail-dialog.component';
+import { factoryMock } from '../../services/factory.mock';
 
 @Component({
     template: `
@@ -154,11 +154,11 @@ import { FactoryDetailDialogComponent } from './factory-detail-dialog.component'
     `,
     standalone: true,
     imports: [CommonModule, SelectModule, IconFieldModule, InputIconModule, TableModule, TagModule, InputTextModule, FormsModule, ButtonModule, CheckboxModule, FactoryAddDialogComponent, FactoryEditDialogComponent, FactoryDetailDialogComponent],
-    providers: [FactoryService, MessageService]
+    providers: [MessageService]
 })
 export class FactoryListComponent implements OnInit {
-    private factoryService = inject(FactoryService);
     private messageService = inject(MessageService);
+    private cdr = inject(ChangeDetectorRef);
     factories: Factory[] = [];
     loading: boolean = true;
     searchKeyword: string = '';
@@ -194,8 +194,9 @@ export class FactoryListComponent implements OnInit {
 
     async loadFactories(): Promise<void> {
         this.loading = true;
-        this.factories = await this.factoryService.getFactories();
+        this.factories = await factoryMock.getFactories();
         this.loading = false;
+        this.cdr.detectChanges();
     }
 
     search(table: Table) {
@@ -244,16 +245,16 @@ export class FactoryListComponent implements OnInit {
         this.detailDialogVisible = true;
     }
 
-    handleAddFactory(event: any) {
+    async handleAddFactory(event: any) {
         const factory = event as Factory;
-        const maxId = Math.max(...this.factories.map(f => f.id));
-        factory.id = maxId + 1;
-        this.factories.unshift(factory);
+        const newFactory = await factoryMock.createFactory(factory);
+        this.factories.unshift(newFactory);
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Factory added successfully!' });
     }
 
-    handleEditFactory(event: any) {
+    async handleEditFactory(event: any) {
         const updatedFactory = event as Factory;
+        await factoryMock.updateFactory({ id: updatedFactory.id, data: updatedFactory });
         const index = this.factories.findIndex(f => f.id === updatedFactory.id);
         if (index !== -1) {
             this.factories[index] = updatedFactory;

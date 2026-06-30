@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, inject, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Factory } from '../../models/factory.model';
-import { FactoryService } from '../../services/factory.service';
+import { regionMockData, factoryStatuses } from '../../mock/factory.mock';
 
 @Component({
     selector: 'factory-edit-dialog',
@@ -151,8 +151,6 @@ export class FactoryEditDialogComponent implements OnInit, OnChanges {
     @Output() confirmed = new EventEmitter<Factory>();
 
     @ViewChild('editForm') editForm!: NgForm;
-
-    private factoryService = inject(FactoryService);
     
     editFactory: Factory = {
         id: 0,
@@ -168,11 +166,11 @@ export class FactoryEditDialogComponent implements OnInit, OnChanges {
     statusOptions: { label: string; value: string }[] = [];
 
     ngOnInit(): void {
-        this.locations = this.factoryService.getRegions().map(r => ({
+        this.locations = regionMockData.map(r => ({
             label: r.name,
             value: r.name
         }));
-        this.statusOptions = this.factoryService.getFactoryStatuses();
+        this.statusOptions = factoryStatuses;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -186,12 +184,8 @@ export class FactoryEditDialogComponent implements OnInit, OnChanges {
 
     onSubmit(form: NgForm): void {
         if (form.valid && this.factory) {
-            this.factoryService.updateFactory(this.factory.id, this.editFactory).then(updated => {
-                if (updated) {
-                    this.confirmed.emit(updated);
-                    this.close();
-                }
-            });
+            this.confirmed.emit({ ...this.editFactory });
+            this.close();
         }
     }
 
