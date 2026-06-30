@@ -7,7 +7,7 @@ import { FlatItem } from '@/app/utils/tree-utils';
 export class MenuService {
   private flatMenuData: FlatItem[] = [
     { id: '1', parentId: null, label: 'Dashboard', icon: 'pi pi-home', route: '/' },
-    { id: '2', parentId: null, label: 'Factory', icon: 'pi pi-box', route: '/factory/list' },
+    { id: '2', parentId: null, label: 'Factory', icon: 'pi pi-box' },
     { id: '3', parentId: null, label: 'New House', icon: 'pi pi-building' },
     // { id: '4', parentId: null, label: 'Second House', icon: 'pi pi-search', route: '/reports' },
     // { id: '5', parentId: null, label: 'Rent House', icon: 'pi pi-users', route: '/settings' },
