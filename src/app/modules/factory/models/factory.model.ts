@@ -11,6 +11,8 @@ export interface Factory {
 export interface Region {
     name: string;
     code: string;
+    type: 'military' | 'local' | 'unknown';
+    createdDate: string;
 }
 
 export interface FactoryStatus {

@@ -14,9 +14,10 @@ export class MenuService {
     // { id: '6', parentId: null, label: 'Advertising', icon: 'pi pi-volume-up', route: '/settings' },
     // { id: '7', parentId: null, label: 'Analyse', icon: 'pi pi-chart-bar', route: '/settings' },
 
-    { id: '2-1', parentId: '2', label: 'Factory List', route: '/factory/list' },
-    { id: '2-2', parentId: '2', label: 'Factory Orders', route: '/factory/orders' },
-    { id: '2-3', parentId: '2', label: 'Regional', route: '/factory/regions' },
+    { id: '2-1', parentId: '2', label: 'Regional', route: '/factory/regions' },
+    { id: '2-2', parentId: '2', label: 'Factory List', route: '/factory/list' },
+    { id: '2-3', parentId: '2', label: 'Factory Orders', route: '/factory/orders' },
+    
 
     { id: '3-1', parentId: '3', label: 'Property Developers', route: '/products' },
     { id: '3-2', parentId: '3', label: 'Real Estate', route: '/products/categories' },
