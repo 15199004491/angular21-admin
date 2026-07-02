@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -42,7 +42,8 @@ import { factoryMock } from '@/app/modules/factory/services/factory.mock';
                 <ng-template #caption>
                     <div class="flex justify-between items-center py-4">
                         <div class="flex items-center gap-2">
-                            <common-tree (nodeSelected)="onNodeSelect($event)"></common-tree>
+                            <common-tree #treeComponent (nodeSelected)="onNodeSelect($event)"></common-tree>
+                            <p-button label="Reset" (click)="resetFilter()" severity="success"></p-button>
                         </div>
                         <div class="flex items-center gap-2">
                             <p-button 
@@ -166,6 +167,7 @@ import { factoryMock } from '@/app/modules/factory/services/factory.mock';
 export class RegionalComponent implements OnInit {
     private messageService = inject(MessageService);
     private cdr = inject(ChangeDetectorRef);
+    @ViewChild('treeComponent') treeComponent!: CommonTreeComponent;
     regions: Region[] = [];
     allRegions: Region[] = [];
     factories: Factory[] = [];
@@ -272,6 +274,11 @@ export class RegionalComponent implements OnInit {
             orgData.toLowerCase().includes(region.name.toLowerCase())
         );
         this.cdr.detectChanges();
+    }
+
+    resetFilter() {
+        this.treeComponent?.clearSelection();
+        this.regions = [...this.allRegions];
     }
 
     deleteSelected() {

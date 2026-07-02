@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TreeNodeComponent } from './tree-node.component';
 
-interface TreeData {
+export interface TreeData {
     label: string;
     data: string;
     children?: TreeData[];
@@ -11,7 +12,7 @@ interface TreeData {
 @Component({
     selector: 'common-tree',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TreeNodeComponent],
     template: `
         <div class="common-tree-dropdown" style="min-width: 25rem;">
             <div class="search-input-wrapper">
@@ -30,44 +31,12 @@ interface TreeData {
             
             <div *ngIf="isOpen" class="dropdown-panel">
                 <div class="tree-content">
-                    <div 
+                    <tree-node 
                         *ngFor="let item of filteredTreeData" 
-                        class="tree-node"
-                    >
-                        <div class="tree-item" (click)="toggleExpand(item)">
-                            <span class="expand-icon" *ngIf="item.children && item.children.length > 0" [class.expanded]="expandedItems.includes(item.data)"></span>
-                            <span *ngIf="!item.children || item.children.length === 0" class="expand-icon-placeholder"></span>
-                            <span class="node-label" (click)="selectItem(item)">
-                                {{ item.label }}
-                            </span>
-                        </div>
-                        <div 
-                            *ngIf="item.children && expandedItems.includes(item.data)" 
-                            class="tree-children"
-                        >
-                            <div *ngFor="let child of getVisibleChildren(item.children)" class="tree-child">
-                                <div class="tree-item" (click)="toggleExpand(child)">
-                                    <span class="expand-icon" *ngIf="child.children && child.children.length > 0" [class.expanded]="expandedItems.includes(child.data)"></span>
-                                    <span *ngIf="!child.children || child.children.length === 0" class="expand-icon-placeholder"></span>
-                                    <span class="node-label" (click)="selectItem(child)">
-                                        {{ child.label }}
-                                    </span>
-                                </div>
-                                <div 
-                                    *ngIf="child.children && expandedItems.includes(child.data)" 
-                                    class="tree-grandchildren"
-                                >
-                                    <div *ngFor="let grandchild of getVisibleChildren(child.children)" class="tree-grandchild">
-                                        <span class="expand-icon" *ngIf="grandchild.children && grandchild.children.length > 0" [class.expanded]="expandedItems.includes(grandchild.data)"></span>
-                                        <span *ngIf="!grandchild.children || grandchild.children.length === 0" class="expand-icon-placeholder"></span>
-                                        <span class="node-label" (click)="selectItem(grandchild)">
-                                            {{ grandchild.label }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        [node]="item"
+                        [expandedItems]="expandedItems"
+                        (nodeSelected)="onNodeSelected($event)"
+                    ></tree-node>
                     <div *ngIf="filteredTreeData.length === 0" class="no-results">
                         No results found
                     </div>
@@ -82,18 +51,19 @@ interface TreeData {
         .search-input-wrapper {
             display: flex;
             align-items: center;
-            border: 1px solid #ced4da;
+            border: 1px solid #16a34a;
             border-radius: 4px;
             background: white;
             overflow: hidden;
+            height: 2.5rem;
         }
         .search-input-wrapper:focus-within {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            border-color: #16a34a;
+            box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.25);
         }
         .search-input {
             flex: 1;
-            padding: 0.5rem 0.75rem;
+            padding: 0.625rem 0.75rem;
             border: none;
             font-size: 0.875rem;
             outline: none;
@@ -157,74 +127,6 @@ interface TreeData {
         }
         .tree-content {
             padding: 0.25rem;
-        }
-        .tree-item {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.25rem 0.375rem;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .tree-item:hover {
-            background-color: #f8f9fa;
-        }
-        .expand-icon {
-            width: 0.75rem;
-            height: 0.75rem;
-            position: relative;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: transform 0.2s;
-        }
-        .expand-icon::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0.4rem;
-            height: 0.4rem;
-            border-right: 1px solid #6c757d;
-            border-bottom: 1px solid #6c757d;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            transition: transform 0.2s;
-        }
-        .expand-icon.expanded::before {
-            transform: translate(-50%, -50%) rotate(45deg);
-        }
-        .expand-icon-placeholder {
-            width: 0.75rem;
-            height: 0.75rem;
-            flex-shrink: 0;
-        }
-        .node-label {
-            font-size: 0.875rem;
-            color: #212529;
-            cursor: pointer;
-        }
-        .node-label:hover {
-            color: #0d6efd;
-        }
-        .tree-children {
-            padding-left: 1rem;
-        }
-        .tree-child {
-            margin-top: 0.125rem;
-        }
-        .tree-grandchildren {
-            padding-left: 1rem;
-        }
-        .tree-grandchild {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.25rem 0.375rem;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-top: 0.125rem;
-        }
-        .tree-grandchild:hover {
-            background-color: #f8f9fa;
         }
     `]
 })
@@ -328,12 +230,18 @@ export class CommonTreeComponent {
     toggleDropdown() {
         this.isOpen = !this.isOpen;
         if (this.isOpen) {
+            this.searchKeyword = '';
             this.filteredTreeData = [...this.treeData];
         }
     }
 
+    closeDropdown() {
+        this.isOpen = false;
+    }
+
     openDropdown() {
         if (!this.isOpen) {
+            this.searchKeyword = '';
             this.isOpen = true;
             this.filteredTreeData = [...this.treeData];
         }
@@ -374,40 +282,18 @@ export class CommonTreeComponent {
         return null;
     }
 
-    getVisibleChildren(children: TreeData[]): TreeData[] {
-        const keyword = this.searchKeyword.toLowerCase().trim();
-        if (!keyword) {
-            return children;
-        }
-        return children.filter(child => 
-            child.label.toLowerCase().includes(keyword) ||
-            (child.children && child.children.some(grandchild => 
-                grandchild.label.toLowerCase().includes(keyword)
-            ))
-        );
-    }
-
-    toggleExpand(item: TreeData) {
-        if (!item.children || item.children.length === 0) return;
-        
-        const index = this.expandedItems.indexOf(item.data);
-        if (index > -1) {
-            this.expandedItems.splice(index, 1);
-        } else {
-            this.expandedItems.push(item.data);
-        }
-    }
-
-    selectItem(item: TreeData) {
-        this.selectedItem = item;
-        this.searchKeyword = item.label;
+    onNodeSelected(node: TreeData) {
+        this.selectedItem = node;
+        this.searchKeyword = node.label;
         this.isOpen = false;
-        this.nodeSelected.emit(item);
+        this.nodeSelected.emit(node);
     }
 
     clearSelection() {
         this.selectedItem = null;
         this.searchKeyword = '';
+        this.expandedItems = [];
+        this.isOpen = false;
         this.nodeSelected.emit(null);
     }
 }
