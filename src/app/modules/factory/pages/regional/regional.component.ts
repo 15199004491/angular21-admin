@@ -188,7 +188,7 @@ export class RegionalComponent implements OnInit {
     newRegion: Region = {
         name: '',
         code: '',
-        type: 'unknown',
+        type: 'local',
         createdDate: ''
     };
 
@@ -206,7 +206,7 @@ export class RegionalComponent implements OnInit {
     }
 
     getFactoryCount(regionName: string): number {
-        return this.factories.filter(f => f.location === regionName).length;
+        return this.factories.filter(f => f.location.toLowerCase() === regionName.toLowerCase()).length;
     }
 
     getUnoccupiedCount(regionName: string): number {
@@ -218,24 +218,24 @@ export class RegionalComponent implements OnInit {
     getRegionTypeLabel(type: string): string {
         const labels: Record<string, string> = {
             military: 'Military',
-            local: 'Local',
-            unknown: 'Unknown'
+            local: 'Local'
         };
-        return labels[type] || 'Unknown';
+        return labels[type] || 'Local';
     }
 
     getRegionTypeClass(type: string): string {
         const classes: Record<string, string> = {
-            military: 'text-blue-700',
-            local: 'text-emerald-600',
-            unknown: 'text-orange-500'
+            military: 'text-green-600',
+            local: 'text-gray-900'
         };
-        return classes[type] || 'text-orange-500';
+        return classes[type] || 'text-gray-900';
     }
 
     showFactoriesDialog(regionName: string) {
         this.selectedRegionName = regionName;
-        this.regionFactories = this.factories.filter(f => f.location === regionName);
+        this.regionFactories = this.factories.filter(f => 
+            f.location.toLowerCase() === regionName.toLowerCase()
+        );
         this.factoriesDialogVisible = true;
     }
 
@@ -303,7 +303,7 @@ export class RegionalComponent implements OnInit {
         this.newRegion = {
             name: '',
             code: '',
-            type: 'unknown',
+            type: 'local',
             createdDate: `${dateStr} ${timeStr}`
         };
         this.addDialogVisible = true;

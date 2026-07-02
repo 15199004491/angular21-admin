@@ -80,7 +80,7 @@ export class RegionalAddDialogComponent implements OnInit, OnChanges {
         return {
             name: '',
             code: '',
-            type: 'unknown',
+            type: 'local',
             createdDate: `${dateStr} ${timeStr}`
         };
     }

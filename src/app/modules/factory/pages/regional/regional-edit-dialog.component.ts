@@ -95,7 +95,7 @@ export class RegionalEditDialogComponent implements OnInit, OnChanges {
     editRegion: Region = {
         name: '',
         code: '',
-        type: 'unknown',
+        type: 'local',
         createdDate: ''
     };
 

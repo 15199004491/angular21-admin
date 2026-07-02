@@ -54,7 +54,7 @@ export const regionMockData: Region[] = [
     { name: 'Yecheng County', code: '016', type: 'local', createdDate: '2024-01-20 10:30:00' },
     { name: 'Aksu', code: '017', type: 'local', createdDate: '2024-02-15 14:20:00' },
     { name: 'Aksu City', code: '018', type: 'local', createdDate: '2024-03-25 09:45:00' },
-    { name: 'Kuqa County', code: '019', type: 'unknown', createdDate: '2024-04-05 16:00:00' },
+    { name: 'Kuqa County', code: '019', type: 'local', createdDate: '2024-04-05 16:00:00' },
     { name: 'Guangdong Province', code: '020', type: 'local', createdDate: '2024-01-08 08:30:00' },
     { name: 'Guangzhou', code: '021', type: 'local', createdDate: '2024-02-18 13:15:00' },
     { name: 'Tianhe District', code: '022', type: 'local', createdDate: '2024-03-10 11:00:00' },
