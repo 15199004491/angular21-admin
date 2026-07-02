@@ -13,6 +13,7 @@ export interface Region {
     code: string;
     type: 'military' | 'local';
     createdDate: string;
+    parent?: string;
 }
 
 export interface FactoryStatus {
