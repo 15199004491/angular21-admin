@@ -14,26 +14,15 @@ import { Region } from '@/app/modules/factory/models/factory.model';
         <p-dialog header="Add New Region" [(visible)]="visible" [modal]="true" [style]="{ width: '35%' }" [focusTrap]="false">
             <form #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" class="p-fluid">
                 <div class="field">
-                    <label for="regionCode" class="block mb-2">* Region Code</label>
+                    <label for="regionCode" class="block mb-2">Region Code</label>
                     <input 
                         id="regionCode" 
                         pInputText 
                         [(ngModel)]="region.code" 
                         name="code" 
-                        required
-                        maxlength="10"
-                        pattern="[a-zA-Z0-9]+"
-                        #code="ngModel"
-                        class="w-full"
-                        placeholder="Enter region code (e.g., bj)"
+                        [readonly]="true"
+                        class="w-full bg-gray-100"
                     />
-                    @if (code.invalid && (code.dirty || code.touched)) {
-                        <small class="error-text">
-                            @if (code.errors?.['required']) {<span>Region code is required.</span>}
-                            @if (code.errors?.['maxlength']) {<span>Region code cannot exceed 10 characters.</span>}
-                            @if (code.errors?.['pattern']) {<span>Region code can only contain letters and numbers.</span>}
-                        </small>
-                    }
                 </div>
 
                 <div class="field mt-4">
@@ -73,13 +62,21 @@ export class RegionalAddDialogComponent implements OnInit, OnChanges {
     @Output() visibleChange = new EventEmitter<boolean>();
     @Output() confirmed = new EventEmitter<Region>();
 
+    private generateCode(): string {
+        let result = '';
+        for (let i = 0; i < 12; i++) {
+            result += Math.floor(Math.random() * 10).toString();
+        }
+        return result;
+    }
+
     private createEmptyRegion(): Region {
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
         const timeStr = now.toTimeString().split(' ')[0];
         return {
             name: '',
-            code: '',
+            code: this.generateCode(),
             type: 'local',
             createdDate: `${dateStr} ${timeStr}`
         };
