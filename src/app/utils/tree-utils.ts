@@ -1,7 +1,7 @@
 // src/app/utils/tree-utils.ts
 
 /**
- * 平级数据接口
+ * Flat item interface
  */
 export interface FlatItem {
   id: string;
@@ -9,11 +9,11 @@ export interface FlatItem {
   label: string;
   icon?: string;
   route?: string;
-  children?: never; // 平级数据没有 children
+  children?: never; // Flat items don't have children
 }
 
 /**
- * 树形数据接口
+ * Tree item interface
  */
 export interface TreeItem {
   id: string;
@@ -25,14 +25,14 @@ export interface TreeItem {
 }
 
 /**
- * 将平级数据转换为树形结构
+ * Convert flat data to tree structure
  */
 export function convertFlatToTree(flatItems: FlatItem[]): TreeItem[] {
-  // 创建一个 map 方便查找
+  // Create a map for easy lookup
   const itemMap = new Map<string, TreeItem>();
   const rootItems: TreeItem[] = [];
 
-  // 首先将所有平级项转换为树形项
+  // First, convert all flat items to tree items
   flatItems.forEach(item => {
     itemMap.set(item.id, {
       ...item,
@@ -40,13 +40,13 @@ export function convertFlatToTree(flatItems: FlatItem[]): TreeItem[] {
     });
   });
 
-  // 然后构建树形结构
+  // Then build the tree structure
   itemMap.forEach(item => {
     if (item.parentId === null) {
-      // 根节点
+      // Root node
       rootItems.push(item);
     } else {
-      // 子节点，找到父节点并添加到其子数组
+      // Child node, find parent and add to its children array
       const parent = itemMap.get(item.parentId);
       if (parent) {
         if (!parent.children) {

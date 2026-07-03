@@ -341,7 +341,7 @@ export class RegionalComponent implements OnInit {
 
     handleAddFactoriesToRegion(event: { regionName: string; factories: any[] }) {
         if (event.regionName === 'delete') {
-            // 删除工厂
+            // Delete factories
             const factoryIds = event.factories.map(f => f.id);
             this.factories = this.factories.filter(f => !factoryIds.includes(f.id));
             this.messageService.add({ 
@@ -350,7 +350,7 @@ export class RegionalComponent implements OnInit {
                 detail: `${event.factories.length} factory(s) deleted successfully!` 
             });
         } else {
-            // 分配工厂到区域
+            // Assign factories to region
             event.factories.forEach(factory => {
                 factory.location = event.regionName;
             });
