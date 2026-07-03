@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TreeNodeComponent } from './tree-node.component';
+import { ChangeDetectorRef } from '@angular/core';
 
 export interface TreeData {
     label: string;
@@ -132,6 +133,7 @@ export interface TreeData {
 })
 export class CommonTreeComponent {
     @Output() nodeSelected = new EventEmitter<TreeData | null>();
+    private cdr = inject(ChangeDetectorRef);
 
     selectedItem: TreeData | null = null;
     expandedItems: string[] = [];
@@ -295,5 +297,15 @@ export class CommonTreeComponent {
         this.expandedItems = [];
         this.isOpen = false;
         this.nodeSelected.emit(null);
+    }
+
+    setSelection(node: TreeData | null) {
+        if (node) {
+            this.selectedItem = node;
+            this.searchKeyword = node.label;
+        } else {
+            this.clearSelection();
+        }
+        this.cdr.detectChanges();
     }
 }

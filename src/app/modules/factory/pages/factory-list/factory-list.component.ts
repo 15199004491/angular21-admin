@@ -178,7 +178,9 @@ export class FactoryListComponent implements OnInit {
         status: '',
         employeeCount: 0,
         establishedYear: new Date().getFullYear(),
-        verified: false
+        verified: false,
+        details: '',
+        contact: ''
     };
 
     searchFields = [
@@ -231,7 +233,9 @@ export class FactoryListComponent implements OnInit {
             status: '',
             employeeCount: 0,
             establishedYear: new Date().getFullYear(),
-            verified: false
+            verified: false,
+            details: '',
+            contact: ''
         };
         this.addDialogVisible = true;
     }

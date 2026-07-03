@@ -71,7 +71,7 @@ import { factoryMock } from '@/app/modules/factory/services/factory.mock';
                         <th style="width:20%">Region Name</th>
                         <th style="width:12%">Regional Type</th>
                         <th class="center-text" style="width:15%">Settled Factory</th>
-                        <th class="center-text" style="width:15%">Vacant factories</th>
+                        <th class="center-text" style="width:15%">Unsettled Factory</th>
                         <th style="width:18%">Created Date</th>
                         <th style="width:15%">Actions</th>
                     </tr>
@@ -149,12 +149,15 @@ import { factoryMock } from '@/app/modules/factory/services/factory.mock';
         <regional-edit-dialog 
             [(visible)]="editDialogVisible" 
             [region]="selectedRegion"
+            [allFactories]="factories"
             (confirmed)="handleEditRegion($event)"
+            (factoriesAdded)="handleAddFactoriesToRegion($event)"
         ></regional-edit-dialog>
 
         <regional-detail-dialog 
             [(visible)]="detailDialogVisible" 
             [region]="detailRegion"
+            [allFactories]="factories"
         ></regional-detail-dialog>
 
         <regional-factories-dialog 
@@ -334,5 +337,29 @@ export class RegionalComponent implements OnInit {
             this.regions[index] = updatedRegion;
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Region updated successfully!' });
         }
+    }
+
+    handleAddFactoriesToRegion(event: { regionName: string; factories: any[] }) {
+        if (event.regionName === 'delete') {
+            // 删除工厂
+            const factoryIds = event.factories.map(f => f.id);
+            this.factories = this.factories.filter(f => !factoryIds.includes(f.id));
+            this.messageService.add({ 
+                severity: 'success', 
+                summary: 'Success', 
+                detail: `${event.factories.length} factory(s) deleted successfully!` 
+            });
+        } else {
+            // 分配工厂到区域
+            event.factories.forEach(factory => {
+                factory.location = event.regionName;
+            });
+            this.messageService.add({ 
+                severity: 'success', 
+                summary: 'Success', 
+                detail: `${event.factories.length} factory(s) added to ${event.regionName} successfully!` 
+            });
+        }
+        this.cdr.detectChanges();
     }
 }

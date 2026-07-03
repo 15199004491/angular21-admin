@@ -6,6 +6,8 @@ export interface Factory {
     employeeCount: number;
     establishedYear: number;
     verified: boolean;
+    details: string;
+    contact: string;
 }
 
 export interface Region {

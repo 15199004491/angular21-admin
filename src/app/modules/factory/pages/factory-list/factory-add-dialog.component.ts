@@ -145,7 +145,9 @@ export class FactoryAddDialogComponent implements OnInit, OnChanges {
             status: '',
             employeeCount: 0,
             establishedYear: new Date().getFullYear(),
-            verified: false
+            verified: false,
+            details: '',
+            contact: ''
         };
     }
 
