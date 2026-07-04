@@ -7,14 +7,16 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Factory } from '@/app/modules/factory/models/factory.model';
-import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
+import { factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
+import { CommonTreeComponent } from '@/app/components/common-tree.component';
+import { TreeData } from '@/app/components/common-tree.component';
 
 @Component({
     selector: 'factory-add-dialog',
     standalone: true,
-    imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule],
+    imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule, CommonTreeComponent],
     template: `
-        <p-dialog header="Add New Factory" [(visible)]="visible" [modal]="true" [style]="{ width: '35%' }" [focusTrap]="false">
+        <p-dialog header="Add New Factory" [(visible)]="visible" [modal]="true" [style]="{ width: '520px' }" [focusTrap]="false">
             <form #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" class="p-fluid">
                 <div class="field">
                     <label for="factoryName" class="block mb-2">* Factory Name</label>
@@ -40,19 +42,16 @@ import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/fact
 
                 <div class="field mt-4">
                     <label for="location" class="block mb-2">* Location</label>
-                    <p-select 
-                        id="location" 
-                        [(ngModel)]="factory.location" 
-                        name="location" 
-                        required
-                        #location="ngModel"
-                        [options]="locations"
-                        placeholder="Select location"
-                        class="w-full"
-                    />
-                    @if (location.invalid && (location.dirty || location.touched)) {
+                    <div class="flex items-center gap-2">
+                        <common-tree #locationTreeComponent (nodeSelected)="onLocationSelect($event)"></common-tree>
+                        <p-button label="Reset" (click)="resetLocationSelection()" severity="success" [style]="{ height: '2.5rem' }"></p-button>
+                    </div>
+                    <div *ngIf="selectedLocation" class="mt-2 text-sm text-gray-600">
+                        Selected: {{ selectedLocation.label }}
+                    </div>
+                    @if (!factory.location && locationTouched) {
                         <small class="error-text">
-                            @if (location.errors?.['required']) {<span>Location is required.</span>}
+                            <span>Location is required.</span>
                         </small>
                     }
                 </div>
@@ -129,12 +128,14 @@ import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/fact
 export class FactoryAddDialogComponent implements OnInit, OnChanges {
     @Input() visible: boolean = false;
     @ViewChild('addForm') addForm: any;
+    @ViewChild('locationTreeComponent') locationTreeComponent!: CommonTreeComponent;
     @Input() factory: Factory = this.createEmptyFactory();
     
     @Output() visibleChange = new EventEmitter<boolean>();
     @Output() confirmed = new EventEmitter<Factory>();
 
-    locations: { label: string; value: string }[] = [];
+    selectedLocation: TreeData | null = null;
+    locationTouched: boolean = false;
     statusOptions = factoryStatuses;
 
     private createEmptyFactory(): Factory {
@@ -152,7 +153,6 @@ export class FactoryAddDialogComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        this.locations = regionMockData.map(r => ({ label: r.name, value: r.name }));
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -163,11 +163,30 @@ export class FactoryAddDialogComponent implements OnInit, OnChanges {
 
     private resetForm() {
         this.factory = this.createEmptyFactory();
+        this.selectedLocation = null;
+        this.locationTouched = false;
         Promise.resolve().then(() => {
             if (this.addForm) {
                 this.addForm.reset();
             }
+            if (this.locationTreeComponent) {
+                this.locationTreeComponent.clearSelection();
+            }
         });
+    }
+
+    onLocationSelect(selectedNode: TreeData | null) {
+        if (selectedNode) {
+            this.locationTouched = true;
+        }
+        this.selectedLocation = selectedNode;
+        this.factory.location = selectedNode?.label || '';
+    }
+
+    resetLocationSelection() {
+        this.locationTreeComponent?.clearSelection();
+        this.selectedLocation = null;
+        this.factory.location = '';
     }
 
     close() {

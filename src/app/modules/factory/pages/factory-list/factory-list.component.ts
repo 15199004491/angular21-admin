@@ -45,6 +45,7 @@ import { factorySearchFields } from '@/app/modules/factory/mock/factory.mock';
                                 <input pInputText type="text" [(ngModel)]="searchKeyword" placeholder="Search keyword" />
                             </p-iconfield>
                             <p-button label="Search" icon="pi pi-search" (click)="search(dt2)" />
+                            <p-button label="Reset" icon="pi pi-refresh" (click)="resetSearch(dt2)" severity="secondary" />
                         </div>
                         <div class="flex items-center gap-2">
                             <p-button 
@@ -203,6 +204,13 @@ export class FactoryListComponent implements OnInit {
         } else {
             table.filterGlobal(this.searchKeyword, 'contains');
         }
+    }
+
+    resetSearch(table: Table) {
+        this.searchKeyword = '';
+        this.searchField = '';
+        table.clear();
+        this.loadFactories();
     }
 
     clearFilters(table: Table) {

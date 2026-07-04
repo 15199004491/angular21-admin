@@ -8,18 +8,20 @@ import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Factory } from '@/app/modules/factory/models/factory.model';
-import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
+import { factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
+import { CommonTreeComponent } from '@/app/components/common-tree.component';
+import { TreeData } from '@/app/components/common-tree.component';
 
 @Component({
     selector: 'factory-edit-dialog',
     standalone: true,
-    imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule, CheckboxModule],
+    imports: [CommonModule, SelectModule, InputTextModule, FormsModule, ButtonModule, DialogModule, InputNumberModule, CheckboxModule, CommonTreeComponent],
     template: `
         <p-dialog 
             header="Edit Factory" 
             [(visible)]="visible" 
             [modal]="true" 
-            [style]="{ width: '35%' }"
+            [style]="{ width: '520px' }"
             [focusTrap]="false"
             (onHide)="close()"
         >
@@ -49,19 +51,16 @@ import { regionMockData, factoryStatuses } from '@/app/modules/factory/mock/fact
 
                 <div class="field mt-4">
                     <label for="editLocation" class="block mb-2">* Location</label>
-                    <p-select 
-                        id="editLocation" 
-                        name="location" 
-                        [(ngModel)]="editFactory.location"
-                        #location="ngModel"
-                        required
-                        [options]="locations"
-                        placeholder="Select location"
-                        class="w-full"
-                    />
-                    @if (location.invalid && (location.dirty || location.touched)) {
+                    <div class="flex items-center gap-2">
+                        <common-tree #locationTreeComponent (nodeSelected)="onLocationSelect($event)"></common-tree>
+                        <p-button label="Reset" (click)="resetLocationSelection()" severity="success" [style]="{ height: '2.5rem' }"></p-button>
+                    </div>
+                    <div *ngIf="selectedLocation" class="mt-2 text-sm text-gray-600">
+                        Selected: {{ selectedLocation.label }}
+                    </div>
+                    @if (!editFactory.location && locationTouched) {
                         <small class="error-text">
-                            @if (location.errors?.['required']) {<span>Location is required.</span>}
+                            <span>Location is required.</span>
                         </small>
                     }
                 </div>
@@ -166,6 +165,7 @@ export class FactoryEditDialogComponent implements OnInit, OnChanges {
     @Output() confirmed = new EventEmitter<Factory>();
 
     @ViewChild('editForm') editForm!: NgForm;
+    @ViewChild('locationTreeComponent') locationTreeComponent!: CommonTreeComponent;
     
     editFactory: Factory = {
         id: 0,
@@ -179,24 +179,47 @@ export class FactoryEditDialogComponent implements OnInit, OnChanges {
         contact: ''
     };
 
-    locations: { label: string; value: string }[] = [];
+    selectedLocation: TreeData | null = null;
+    locationTouched: boolean = false;
     statusOptions: { label: string; value: string }[] = [];
 
     ngOnInit(): void {
-        this.locations = regionMockData.map(r => ({
-            label: r.name,
-            value: r.name
-        }));
         this.statusOptions = factoryStatuses;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['visible'] && this.visible && this.factory) {
+        if (changes['visible']?.currentValue && this.factory) {
             this.editFactory = { ...this.factory };
+            
+            if (this.editFactory.location) {
+                this.selectedLocation = {
+                    label: this.editFactory.location,
+                    data: this.editFactory.location.toLowerCase().replace(/\s+/g, '-')
+                };
+            } else {
+                this.selectedLocation = null;
+            }
+            
             setTimeout(() => {
                 this.editForm?.resetForm(this.editFactory);
+                if (this.locationTreeComponent && this.selectedLocation) {
+                    this.locationTreeComponent.setSelection(this.selectedLocation);
+                }
             }, 0);
         }
+    }
+
+    onLocationSelect(selectedNode: TreeData | null) {
+        this.locationTouched = true;
+        this.selectedLocation = selectedNode;
+        this.editFactory.location = selectedNode?.label || '';
+    }
+
+    resetLocationSelection() {
+        this.locationTreeComponent?.clearSelection();
+        this.selectedLocation = null;
+        this.editFactory.location = '';
+        this.locationTouched = false;
     }
 
     onSubmit(form: NgForm): void {
