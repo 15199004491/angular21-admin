@@ -91,7 +91,7 @@ import { factorySearchFields } from '@/app/modules/factory/mock/factory.mock';
                             <p-tag 
                                 [value]="factory.status" 
                                 [severity]="factory.status === 'active' ? 'success' : factory.status === 'maintenance' ? 'warn' : 'danger'"
-                                [style]="factory.status === 'active' ? { color: '#10b981', backgroundColor: '#d1fae5' } : {}"
+                                [style]="factory.status === 'active' ? { color: '#10b981', backgroundColor: '#d1fae5', fontWeight: 'normal' } : { fontWeight: 'normal' }"
                             />
                         </td>
                         <td>{{ factory.employeeCount.toLocaleString() }}</td>

@@ -44,7 +44,7 @@ import { regionTypeLabels, regionTypeClasses } from '@/app/modules/factory/mock/
                     <div class="flex justify-between items-center py-4">
                         <div class="flex items-center gap-2">
                             <common-tree #treeComponent (nodeSelected)="onNodeSelect($event)"></common-tree>
-                            <p-button label="Reset" (click)="resetFilter()" severity="success"></p-button>
+                            <p-button label="Reset" icon="pi pi-refresh" (click)="resetFilter()" severity="success"></p-button>
                         </div>
                         <div class="flex items-center gap-2">
                             <p-button 
@@ -85,12 +85,11 @@ import { regionTypeLabels, regionTypeClasses } from '@/app/modules/factory/mock/
                         <td>{{ region.code }}</td>
                         <td>{{ region.name }}</td>
                         <td class="text-center">
-                            <span 
-                                class="font-medium"
-                                [ngClass]="getRegionTypeClass(region.type)"
-                            >
-                                {{ getRegionTypeLabel(region.type) }}
-                            </span>
+                            <p-tag 
+                                [value]="getRegionTypeLabel(region.type)" 
+                                [severity]="getRegionTypeSeverity(region.type)"
+                                [style]="region.type === 'military' ? { color: '#10b981', backgroundColor: '#d1fae5', fontWeight: 'normal' } : { fontWeight: 'normal' }"
+                            />
                         </td>
                         <td class="center-text">
                             <span 
@@ -223,8 +222,8 @@ export class RegionalComponent implements OnInit {
         return regionTypeLabels[type] || 'Local';
     }
 
-    getRegionTypeClass(type: string): string {
-        return regionTypeClasses[type] || 'text-gray-900';
+    getRegionTypeSeverity(type: string): 'success' | 'warn' {
+        return type === 'military' ? 'success' : 'warn';
     }
 
     showFactoriesDialog(regionName: string) {
