@@ -25,7 +25,7 @@ export interface TreeData {
                     (input)="handleSearch()"
                     (focus)="openDropdown()"
                 >
-                <button class="dropdown-arrow-btn" (click)="toggleDropdown()">
+                <button class="dropdown-arrow-btn" (click)="toggleDropdown($event)">
                     <span class="dropdown-arrow" [class.expanded]="isOpen"></span>
                 </button>
             </div>
@@ -229,7 +229,9 @@ export class CommonTreeComponent {
         }
     ];
 
-    toggleDropdown() {
+    toggleDropdown(event: Event) {
+        event.stopPropagation();
+        event.preventDefault();
         this.isOpen = !this.isOpen;
         if (this.isOpen) {
             this.searchKeyword = '';
@@ -296,6 +298,7 @@ export class CommonTreeComponent {
         this.searchKeyword = '';
         this.expandedItems = [];
         this.isOpen = false;
+        this.filteredTreeData = [...this.treeData];
         this.nodeSelected.emit(null);
     }
 

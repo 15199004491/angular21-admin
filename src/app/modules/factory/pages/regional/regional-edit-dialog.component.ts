@@ -268,6 +268,7 @@ export class RegionalEditDialogComponent implements OnInit, OnChanges {
     }
 
     close(): void {
+        this.visible = false;
         this.visibleChange.emit(false);
     }
 }

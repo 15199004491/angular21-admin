@@ -14,7 +14,7 @@ import { TreeData } from '@/app/components/common-tree.component';
     standalone: true,
     imports: [CommonModule, InputTextModule, FormsModule, ButtonModule, DialogModule, CommonTreeComponent, SelectModule],
     template: `
-        <p-dialog header="Add New Region" [(visible)]="visible" [modal]="true" [style]="{ width: '520px' }" [focusTrap]="false">
+        <p-dialog header="Add New Region" [(visible)]="visible" [modal]="true" [style]="{ width: '520px' }" [focusTrap]="false" (onHide)="close()">
             <form #addForm="ngForm" (ngSubmit)="onSubmit(addForm)" class="p-fluid">
                 <div class="field">
                     <label for="regionCode" class="block mb-2">Region Code</label>
@@ -130,7 +130,7 @@ export class RegionalAddDialogComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['visible']?.currentValue) {
+        if (changes['visible'] && changes['visible'].currentValue && !changes['visible'].previousValue) {
             this.resetForm();
         }
     }
@@ -160,6 +160,7 @@ export class RegionalAddDialogComponent implements OnInit, OnChanges {
     }
 
     close() {
+        this.visible = false;
         this.visibleChange.emit(false);
     }
 
