@@ -9,39 +9,7 @@ import { Region, Factory } from '@/app/modules/factory/models/factory.model';
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
 import { TreeData } from '@/app/components/common-tree.component';
 import { RegionalVacantFactoriesDialogComponent } from './regional-vacant-factories-dialog.component';
-
-const regionCodeToTreeData: Record<string, { label: string; data: string }> = {
-    '100100000001': { label: 'Xinjiang Province', data: 'xinjiang' },
-    '100100000002': { label: 'Urumqi', data: 'urumqi' },
-    '100100000003': { label: 'Tianshan District', data: 'tianshan' },
-    '100100000004': { label: 'Saybagh District', data: 'saybagh' },
-    '100100000005': { label: 'Shuimogou District', data: 'shuimogou' },
-    '100100000006': { label: 'Shihezi', data: 'shihezi' },
-    '100100000007': { label: 'Shawan', data: 'shawan' },
-    '100100000008': { label: 'Shawan Town', data: 'shawan-town' },
-    '100100000009': { label: 'Huangguan Town', data: 'huangguan' },
-    '100100000010': { label: 'Tacheng', data: 'tacheng' },
-    '100100000011': { label: 'Yumin County', data: 'yumin' },
-    '100100000012': { label: 'Emin County', data: 'emin' },
-    '100100000013': { label: 'Jinghe County', data: 'jinghe' },
-    '100100000014': { label: 'Kashgar', data: 'kashgar' },
-    '100100000015': { label: 'Kashgar City', data: 'kashgar-city' },
-    '10010000016': { label: 'Yecheng County', data: 'yecheng' },
-    '100100000017': { label: 'Aksu', data: 'aksu' },
-    '100100000018': { label: 'Aksu City', data: 'aksu-city' },
-    '100100000019': { label: 'Kuqa County', data: 'kuqa' },
-    '100200000001': { label: 'Guangdong Province', data: 'guangdong' },
-    '100200000002': { label: 'Guangzhou', data: 'guangzhou' },
-    '100200000003': { label: 'Tianhe District', data: 'tianhe' },
-    '100200000004': { label: 'Zhujiang New Town', data: 'zhujiang' },
-    '100200000005': { label: 'Shenzhen', data: 'shenzhen' },
-    '100200000006': { label: 'Futian District', data: 'futian' },
-    '100200000007': { label: 'Nanshan District', data: 'nanshan' },
-    '100300000001': { label: 'Beijing', data: 'beijing' },
-    '100300000002': { label: 'Chaoyang District', data: 'chaoyang' },
-    '100300000003': { label: 'Haidian District', data: 'haidian' },
-    '100300000004': { label: 'Xicheng District', data: 'xicheng' }
-};
+import { regionCodeToTreeData, regionTypes } from '@/app/modules/factory/mock/factory.mock';
 
 @Component({
     selector: 'regional-edit-dialog',
@@ -185,11 +153,7 @@ export class RegionalEditDialogComponent implements OnInit, OnChanges {
 
     selectedParent: TreeData | null = null;
     vacantFactoriesDialogVisible: boolean = false;
-    
-    regionTypes = [
-        { label: 'Local', value: 'local' },
-        { label: 'Military', value: 'military' }
-    ];
+    regionTypes = regionTypes;
 
     get vacantFactories(): Factory[] {
         if (!this.editRegion.name) return [];

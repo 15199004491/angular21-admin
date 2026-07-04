@@ -8,6 +8,7 @@ import { SelectModule } from 'primeng/select';
 import { Region } from '@/app/modules/factory/models/factory.model';
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
 import { TreeData } from '@/app/components/common-tree.component';
+import { regionTypes } from '@/app/modules/factory/mock/factory.mock';
 
 @Component({
     selector: 'regional-add-dialog',
@@ -99,11 +100,7 @@ export class RegionalAddDialogComponent implements OnInit, OnChanges {
     @Output() confirmed = new EventEmitter<Region>();
 
     selectedParent: TreeData | null = null;
-    
-    regionTypes = [
-        { label: 'Local', value: 'local' },
-        { label: 'Military', value: 'military' }
-    ];
+    regionTypes = regionTypes;
 
     private generateCode(): string {
         let result = '';

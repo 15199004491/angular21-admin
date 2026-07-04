@@ -15,6 +15,7 @@ import { FactoryAddDialogComponent } from './factory-add-dialog.component';
 import { FactoryEditDialogComponent } from './factory-edit-dialog.component';
 import { FactoryDetailDialogComponent } from './factory-detail-dialog.component';
 import { factoryMock } from '@/app/modules/factory/services/factory.mock';
+import { factorySearchFields } from '@/app/modules/factory/mock/factory.mock';
 
 @Component({
     template: `
@@ -183,13 +184,7 @@ export class FactoryListComponent implements OnInit {
         contact: ''
     };
 
-    searchFields = [
-        { label: 'All Fields', value: '' },
-        { label: 'Factory Name', value: 'name' },
-        { label: 'Location', value: 'location' },
-        { label: 'Status', value: 'status' },
-        { label: 'ID', value: 'id' }
-    ];
+    searchFields = factorySearchFields;
 
     ngOnInit() {
         this.loadFactories();

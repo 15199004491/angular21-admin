@@ -18,6 +18,7 @@ import { RegionalFactoriesDialogComponent } from './regional-factories-dialog.co
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
 import { regionalMock } from '@/app/modules/factory/services/regional.mock';
 import { factoryMock } from '@/app/modules/factory/services/factory.mock';
+import { regionTypeLabels, regionTypeClasses } from '@/app/modules/factory/mock/factory.mock';
 
 @Component({
     selector: 'regional',
@@ -219,19 +220,11 @@ export class RegionalComponent implements OnInit {
     }
 
     getRegionTypeLabel(type: string): string {
-        const labels: Record<string, string> = {
-            military: 'Military',
-            local: 'Local'
-        };
-        return labels[type] || 'Local';
+        return regionTypeLabels[type] || 'Local';
     }
 
     getRegionTypeClass(type: string): string {
-        const classes: Record<string, string> = {
-            military: 'text-green-600',
-            local: 'text-gray-900'
-        };
-        return classes[type] || 'text-gray-900';
+        return regionTypeClasses[type] || 'text-gray-900';
     }
 
     showFactoriesDialog(regionName: string) {
