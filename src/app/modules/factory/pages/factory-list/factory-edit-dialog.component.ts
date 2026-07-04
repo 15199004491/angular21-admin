@@ -55,9 +55,11 @@ import { TreeData } from '@/app/components/common-tree.component';
                         <common-tree #locationTreeComponent (nodeSelected)="onLocationSelect($event)"></common-tree>
                         <p-button label="Reset" (click)="resetLocationSelection()" severity="success" [style]="{ height: '2.5rem' }"></p-button>
                     </div>
-                    <div *ngIf="selectedLocation" class="mt-2 text-sm text-gray-600">
-                        Selected: {{ selectedLocation.label }}
-                    </div>
+                    @if (selectedLocation) {
+                        <div class="mt-2 text-sm text-gray-600">
+                            Selected: {{ selectedLocation.label }}
+                        </div>
+                    }
                     @if (!editFactory.location && locationTouched) {
                         <small class="error-text">
                             <span>Location is required.</span>

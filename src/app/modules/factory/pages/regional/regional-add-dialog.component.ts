@@ -35,9 +35,11 @@ import { regionTypes } from '@/app/modules/factory/mock/factory.mock';
                         <common-tree #parentTreeComponent (nodeSelected)="onParentNodeSelect($event)"></common-tree>
                         <p-button label="Reset" (click)="resetParentSelection()" severity="success" [style]="{ height: '2.5rem' }"></p-button>
                     </div>
-                    <div *ngIf="selectedParent" class="mt-2 text-sm text-gray-600">
-                        Selected: {{ selectedParent.label }}
-                    </div>
+                    @if (selectedParent) {
+                        <div class="mt-2 text-sm text-gray-600">
+                            Selected: {{ selectedParent.label }}
+                        </div>
+                    }
                 </div>
 
                 <div class="field mt-4">

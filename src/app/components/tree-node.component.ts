@@ -8,20 +8,27 @@ import { TreeData } from './common-tree.component';
     imports: [CommonModule],
     template: `
         <div class="tree-node-item" (click)="toggleExpand()">
-            <span *ngIf="node.children && node.children.length > 0" class="expand-icon" [class.expanded]="expanded"></span>
-            <span *ngIf="!node.children || node.children.length === 0" class="expand-icon-placeholder"></span>
+            @if (node.children && node.children.length > 0) {
+                <span class="expand-icon" [class.expanded]="expanded"></span>
+            }
+            @if (!node.children || node.children.length === 0) {
+                <span class="expand-icon-placeholder"></span>
+            }
             <span class="node-label" (click)="selectItem($event)">
                 {{ node.label }}
             </span>
         </div>
-        <div *ngIf="node.children && expanded" class="tree-children">
-            <tree-node 
-                *ngFor="let child of node.children" 
-                [node]="child"
-                [expandedItems]="expandedItems"
-                (nodeSelected)="onNodeSelected($event)"
-            ></tree-node>
-        </div>
+        @if (node.children && expanded) {
+            <div class="tree-children">
+                @for (child of node.children; track child.data) {
+                    <tree-node 
+                        [node]="child"
+                        [expandedItems]="expandedItems"
+                        (nodeSelected)="onNodeSelected($event)"
+                    ></tree-node>
+                }
+            </div>
+        }
     `,
     styles: [`
         .tree-node-item {

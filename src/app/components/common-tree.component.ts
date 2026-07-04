@@ -30,19 +30,24 @@ export interface TreeData {
                 </button>
             </div>
             
-            <div *ngIf="isOpen" class="dropdown-panel">
-                <div class="tree-content">
-                    <tree-node 
-                        *ngFor="let item of filteredTreeData" 
-                        [node]="item"
-                        [expandedItems]="expandedItems"
-                        (nodeSelected)="onNodeSelected($event)"
-                    ></tree-node>
-                    <div *ngIf="filteredTreeData.length === 0" class="no-results">
-                        No results found
+            @if (isOpen) {
+                <div class="dropdown-panel">
+                    <div class="tree-content">
+                        @for (item of filteredTreeData; track item.data) {
+                            <tree-node 
+                                [node]="item"
+                                [expandedItems]="expandedItems"
+                                (nodeSelected)="onNodeSelected($event)"
+                            ></tree-node>
+                        }
+                        @if (filteredTreeData.length === 0) {
+                            <div class="no-results">
+                                No results found
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
+            }
         </div>
     `,
     styles: [`

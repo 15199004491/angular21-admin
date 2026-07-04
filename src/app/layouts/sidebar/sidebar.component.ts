@@ -1,9 +1,9 @@
-// src/app/layouts/sidebar/sidebar.component.ts
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { MenuService } from '@/app/services/menu.service';
-import { convertFlatToTree, TreeItem } from '@/app/utils/tree-utils';
+import { AuthService, PermissionType } from '@/app/core/services/auth.service';
+import { convertFlatToTree, TreeItem, FlatItem } from '@/app/utils/tree-utils';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -12,19 +12,11 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, RouterModule],
   template: `
     <aside class="bg-gray-800 text-white w-64 min-h-screen fixed left-0 top-16">
-      <!-- Logo -->
-      <div class="h-16 flex items-center justify-center border-b border-gray-700">
-        <span class="text-xl font-bold text-blue-400">Admin</span>
-      </div>
-      
-      <!-- Navigation Menu -->
       <nav class="p-4">
         <ul class="space-y-1">
-          <!-- Define recursive template for menu items -->
           <ng-template #menuRecursive let-items>
             @for (item of items; track item.id) {
               <li>
-                <!-- Item with children (expandable) -->
                 @if (item.children?.length) {
                   <div class="menu-item">
                     <button 
@@ -40,7 +32,6 @@ import { Subscription } from 'rxjs';
                         [class.rotate-180]="expandedItems.has(item.id)"
                       ></span>
                     </button>
-                    <!-- Submenu -->
                     @if (expandedItems.has(item.id)) {
                       <ul class="ml-4 mt-1 space-y-1">
                         <ng-container *ngTemplateOutlet="menuRecursive; context: { $implicit: item.children }"></ng-container>
@@ -49,7 +40,6 @@ import { Subscription } from 'rxjs';
                   </div>
                 }
                 
-                <!-- Item without children (link) -->
                 @if (!item.children?.length) {
                   <a 
                     [routerLink]="item.route || '#'" 
@@ -64,7 +54,6 @@ import { Subscription } from 'rxjs';
             }
           </ng-template>
           
-          <!-- Render the recursive menu template -->
           <ng-container *ngTemplateOutlet="menuRecursive; context: { $implicit: menuItems }"></ng-container>
         </ul>
       </nav>
@@ -104,9 +93,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   expandedItems = new Set<string>();
   currentRoute = '/';
   private routerSubscription: Subscription | null = null;
+  private permissionSubscription: Subscription | null = null;
 
   constructor(
     private menuService: MenuService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
@@ -114,22 +105,45 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadMenu();
     this.setupRouteListener();
+    this.setupPermissionListener();
   }
 
   ngOnDestroy(): void {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
     }
+    if (this.permissionSubscription) {
+      this.permissionSubscription.unsubscribe();
+    }
   }
 
   async loadMenu(): Promise<void> {
     const flatData = await this.menuService.getFlatMenuData();
-    this.menuItems = convertFlatToTree(flatData);
+    const filteredData = this.filterMenuByPermission(flatData);
+    this.menuItems = convertFlatToTree(filteredData);
     
     this.currentRoute = this.router.url;
     this.expandParentMenu(this.currentRoute);
     
     this.cdr.detectChanges();
+  }
+
+  filterMenuByPermission(flatData: FlatItem[]): FlatItem[] {
+    const permission = this.authService.currentPermission;
+    
+    switch (permission) {
+      case 'dashboard':
+        return flatData.filter(item => item.id === '1' || item.parentId === '1');
+      case 'dashboard-factory':
+        return flatData.filter(item => 
+          item.id === '1' || item.parentId === '1' ||
+          item.id === '2' || item.parentId === '2' || item.parentId?.startsWith('2-')
+        );
+      case 'dashboard-factory-newhouse':
+        return flatData;
+      default:
+        return flatData;
+    }
   }
 
   setupRouteListener(): void {
@@ -139,6 +153,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.expandParentMenu(this.currentRoute);
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  setupPermissionListener(): void {
+    this.permissionSubscription = this.authService.permission$.subscribe(() => {
+      this.loadMenu();
     });
   }
 

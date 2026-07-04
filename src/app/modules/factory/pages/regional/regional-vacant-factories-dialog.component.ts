@@ -36,9 +36,9 @@ import { Factory } from '@/app/modules/factory/models/factory.model';
                         <th style="width:13%">Current Location</th>
                         <th style="width:10%">Employees</th>
                         <th style="width:12%">Established Year</th>
-                        <th style="width:42%" *ngIf="readonly">Details</th>
-                        <th style="width:25%" *ngIf="!readonly">Details</th>
-                        <th style="width:19%" *ngIf="!readonly">Actions</th>
+                        @if (readonly) {<th style="width:42%">Details</th>}
+                        @if (!readonly) {<th style="width:25%">Details</th>}
+                        @if (!readonly) {<th style="width:19%">Actions</th>}
                     </tr>
                 </ng-template>
                 <ng-template #body let-factory>
@@ -49,26 +49,28 @@ import { Factory } from '@/app/modules/factory/models/factory.model';
                         <td>{{ factory.employeeCount.toLocaleString() }}</td>
                         <td>{{ factory.establishedYear }}</td>
                         <td class="text-justify text-sm">{{ factory.details }}</td>
-                        <td *ngIf="!readonly">
-                            <div class="flex gap-2">
-                                <p-button 
-                                    label="Delete" 
-                                    icon="pi pi-trash"
-                                    [rounded]="true" 
-                                    severity="danger"
-                                    size="small"
-                                    (click)="confirmDelete(factory)"
-                                ></p-button>
-                                <p-button 
-                                    label="Settled" 
-                                    icon="pi pi-check"
-                                    [rounded]="true" 
-                                    severity="success"
-                                    size="small"
-                                    (click)="confirmSettled(factory)"
-                                ></p-button>
-                            </div>
-                        </td>
+                        @if (!readonly) {
+                            <td>
+                                <div class="flex gap-2">
+                                    <p-button 
+                                        label="Delete" 
+                                        icon="pi pi-trash"
+                                        [rounded]="true" 
+                                        severity="danger"
+                                        size="small"
+                                        (click)="confirmDelete(factory)"
+                                    ></p-button>
+                                    <p-button 
+                                        label="Settled" 
+                                        icon="pi pi-check"
+                                        [rounded]="true" 
+                                        severity="success"
+                                        size="small"
+                                        (click)="confirmSettled(factory)"
+                                    ></p-button>
+                                </div>
+                            </td>
+                        }
                     </tr>
                 </ng-template>
                 <ng-template #emptymessage>
@@ -78,12 +80,13 @@ import { Factory } from '@/app/modules/factory/models/factory.model';
                 </ng-template>
             </p-table>
 
-            <p-confirmDialog 
-                *ngIf="!readonly"
-                [style]="{ width: '450px' }"
-                header="Confirm Deletion"
-                icon="pi pi-exclamation-triangle"
-            ></p-confirmDialog>
+            @if (!readonly) {
+                <p-confirmDialog 
+                    [style]="{ width: '450px' }"
+                    header="Confirm Deletion"
+                    icon="pi pi-exclamation-triangle"
+                ></p-confirmDialog>
+            }
         </p-dialog>
     `
 })
