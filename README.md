@@ -1,62 +1,66 @@
-# Ng21App
+# Angular 21 Admin Template
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.0.
+A modern Angular admin template built with PrimeNG and Tailwind CSS.
 
-## Development server
+## Technologies & Versions
 
-To start a local development server, run:
+| Technology | Version | Description |
+|------------|---------|-------------|
+| Angular | ^21.0.0 | Frontend framework |
+| PrimeNG | ^21.1.9 | UI component library |
+| PrimeIcons | ^7.0.0 | Icon library |
+| Tailwind CSS | ^4.3.1 | CSS framework |
+| TypeScript | ~5.9.2 | Type-safe JavaScript |
+| RxJS | ~7.8.0 | Reactive programming |
+| Vitest | ^4.0.8 | Testing framework |
 
-```bash
-ng serve
-```
+## Icons
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+This project uses **PrimeIcons** for icons. You can view the complete icon set at:
+- [PrimeIcons Documentation](https://primeng.org/icons)
 
-## Code scaffolding
+## Environment Requirements
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Node.js**: >= 20.x (Recommended: latest LTS version)
+- **npm**: >= 11.x
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Installation
 
 ```bash
-ng build
+# Install dependencies
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Development
 
 ```bash
-ng test
+# Start development server
+npm start
 ```
 
-## Running end-to-end tests
+The application will run at `http://localhost:4200/`
 
-For end-to-end (e2e) testing, run:
+## Build
 
 ```bash
-ng e2e
+# Build for production
+npm run build
+
+# Build with watch mode (development)
+npm run watch
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Testing
 
-## Additional Resources
+```bash
+# Run unit tests
+npm test
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Author
 
+For any inquiries or support, please contact the project maintainer.
 
-https://primeng.org/icons
+---
+
+*Built with Angular 21 + PrimeNG + Tailwind CSS*
