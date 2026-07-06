@@ -14,8 +14,7 @@ import { Factory } from '@/app/modules/factory/models/factory.model';
 import { FactoryAddDialogComponent } from './factory-add-dialog.component';
 import { FactoryEditDialogComponent } from './factory-edit-dialog.component';
 import { FactoryDetailDialogComponent } from './factory-detail-dialog.component';
-import { factoryMock } from '@/app/modules/factory/services/factory.mock';
-import { factorySearchFields } from '@/app/modules/factory/mock/factory.mock';
+import { factoryMock, factorySearchFields } from '@/app/modules/factory/data/factory.mock';
 
 @Component({
     template: `

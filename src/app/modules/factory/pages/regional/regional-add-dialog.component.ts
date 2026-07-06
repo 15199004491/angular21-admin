@@ -8,7 +8,7 @@ import { SelectModule } from 'primeng/select';
 import { Region } from '@/app/modules/factory/models/factory.model';
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
 import { TreeData } from '@/app/components/common-tree.component';
-import { regionTypes } from '@/app/modules/factory/mock/factory.mock';
+import { regionTypes } from '@/app/modules/factory/data/factory.mock';
 
 @Component({
     selector: 'regional-add-dialog',

@@ -16,9 +16,7 @@ import { RegionalEditDialogComponent } from './regional-edit-dialog.component';
 import { RegionalDetailDialogComponent } from './regional-detail-dialog.component';
 import { RegionalFactoriesDialogComponent } from './regional-factories-dialog.component';
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
-import { regionalMock } from '@/app/modules/factory/services/regional.mock';
-import { factoryMock } from '@/app/modules/factory/services/factory.mock';
-import { regionTypeLabels, regionTypeClasses } from '@/app/modules/factory/mock/factory.mock';
+import { regionalMock, factoryMock, regionTypeLabels, regionTypeClasses } from '@/app/modules/factory/data/factory.mock';
 
 @Component({
     selector: 'regional',

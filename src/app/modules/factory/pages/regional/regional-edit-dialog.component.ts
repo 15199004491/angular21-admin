@@ -9,7 +9,7 @@ import { Region, Factory } from '@/app/modules/factory/models/factory.model';
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
 import { TreeData } from '@/app/components/common-tree.component';
 import { RegionalVacantFactoriesDialogComponent } from './regional-vacant-factories-dialog.component';
-import { regionCodeToTreeData, regionTypes } from '@/app/modules/factory/mock/factory.mock';
+import { regionCodeToTreeData, regionTypes } from '@/app/modules/factory/data/factory.mock';
 
 @Component({
     selector: 'regional-edit-dialog',

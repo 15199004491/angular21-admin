@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Factory } from '@/app/modules/factory/models/factory.model';
-import { factoryStatuses } from '@/app/modules/factory/mock/factory.mock';
+import { factoryStatuses } from '@/app/modules/factory/data/factory.mock';
 import { CommonTreeComponent } from '@/app/components/common-tree.component';
 import { TreeData } from '@/app/components/common-tree.component';
 
