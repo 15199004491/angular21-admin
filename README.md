@@ -1,9 +1,5 @@
 # Factory Management Platform
 
-A **from-scratch** Angular admin platform for factory and real estate resource management, built with modern frontend technologies.
-
-## 📋 Project Overview
-
 This is a production-ready factory management system built **entirely from zero**. It provides comprehensive factory operations management, including factory list, orders, regional management, and real estate resource management modules.
 
 ## Project Preview
