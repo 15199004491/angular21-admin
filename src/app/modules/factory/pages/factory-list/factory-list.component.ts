@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -14,7 +14,9 @@ import { Factory } from '@/app/modules/factory/models/factory.model';
 import { FactoryAddDialogComponent } from './factory-add-dialog.component';
 import { FactoryEditDialogComponent } from './factory-edit-dialog.component';
 import { FactoryDetailDialogComponent } from './factory-detail-dialog.component';
-import { factoryMock, factorySearchFields } from '@/app/modules/factory/data/factory.mock';
+import { factorySearchFields } from '@/app/modules/factory/data/factory.mock';
+import { FactoryStore } from '@/app/modules/factory/store/factory.store';
+import { Subscription } from 'rxjs';
 
 @Component({
     template: `
@@ -157,9 +159,11 @@ import { factoryMock, factorySearchFields } from '@/app/modules/factory/data/fac
     imports: [CommonModule, SelectModule, IconFieldModule, InputIconModule, TableModule, TagModule, InputTextModule, FormsModule, ButtonModule, CheckboxModule, FactoryAddDialogComponent, FactoryEditDialogComponent, FactoryDetailDialogComponent],
     providers: [MessageService]
 })
-export class FactoryListComponent implements OnInit {
+export class FactoryListComponent implements OnInit, OnDestroy {
     private messageService = inject(MessageService);
     private cdr = inject(ChangeDetectorRef);
+    private factoryStore = inject(FactoryStore);
+    
     factories: Factory[] = [];
     loading: boolean = true;
     searchKeyword: string = '';
@@ -185,16 +189,31 @@ export class FactoryListComponent implements OnInit {
     };
 
     searchFields = factorySearchFields;
+    private subscriptions = new Subscription();
 
     ngOnInit() {
-        this.loadFactories();
+        this.initSubscriptions();
+        this.factoryStore.loadFactories();
     }
 
-    async loadFactories(): Promise<void> {
-        this.loading = true;
-        this.factories = await factoryMock.getFactories();
-        this.loading = false;
-        this.cdr.detectChanges();
+    ngOnDestroy() {
+        this.subscriptions.unsubscribe();
+    }
+
+    private initSubscriptions(): void {
+        this.subscriptions.add(
+            this.factoryStore.factories$.subscribe(factories => {
+                this.factories = factories;
+                this.cdr.detectChanges();
+            })
+        );
+
+        this.subscriptions.add(
+            this.factoryStore.loading$.subscribe(loading => {
+                this.loading = loading;
+                this.cdr.detectChanges();
+            })
+        );
     }
 
     search(table: Table) {
@@ -209,7 +228,7 @@ export class FactoryListComponent implements OnInit {
         this.searchKeyword = '';
         this.searchField = '';
         table.clear();
-        this.loadFactories();
+        this.factoryStore.loadFactories();
     }
 
     clearFilters(table: Table) {
@@ -221,7 +240,7 @@ export class FactoryListComponent implements OnInit {
     deleteSelected() {
         if (this.selectedFactories.length > 0) {
             const selectedIds = this.selectedFactories.map(f => f.id);
-            this.factories = this.factories.filter(f => !selectedIds.includes(f.id));
+            this.factoryStore.deleteFactories(selectedIds);
             this.selectedFactories = [];
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Selected factories deleted successfully!' });
         }
@@ -254,18 +273,13 @@ export class FactoryListComponent implements OnInit {
 
     async handleAddFactory(event: any) {
         const factory = event as Factory;
-        const newFactory = await factoryMock.createFactory(factory);
-        this.factories.unshift(newFactory);
+        await this.factoryStore.addFactory(factory);
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Factory added successfully!' });
     }
 
     async handleEditFactory(event: any) {
         const updatedFactory = event as Factory;
-        await factoryMock.updateFactory({ id: updatedFactory.id, data: updatedFactory });
-        const index = this.factories.findIndex(f => f.id === updatedFactory.id);
-        if (index !== -1) {
-            this.factories[index] = updatedFactory;
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Factory updated successfully!' });
-        }
+        await this.factoryStore.updateFactory(updatedFactory.id, updatedFactory);
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Factory updated successfully!' });
     }
 }

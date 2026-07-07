@@ -8,6 +8,6 @@ export default {
   },
   plugins: [],
   corePlugins: {
-    preflight: false, // 禁用默认样式，避免与 Angular 冲突
+    preflight: false, // Disable default styles to avoid conflicts with Angular
   },
 }

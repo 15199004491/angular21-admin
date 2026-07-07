@@ -1,0 +1,1 @@
+export { NewhouseStore } from './newhouse.store';
