@@ -1,6 +1,6 @@
 # Factory Management Platform
 
-This is a production-ready factory management system built **entirely from zero**. It provides comprehensive factory operations management, including factory list, orders, regional management, and real estate resource management modules.
+This is a factory management system built **entirely from zero**. It provides comprehensive factory operations management, including factory list, orders, regional management, and real estate resource management modules.
 
 ## Project Preview
 
@@ -101,3 +101,5 @@ For professional inquiries or collaboration:
 ---
 
 Built with Angular 21 + PrimeNG + Tailwind CSS
+
+**Note**: Built from scratch as a personal project.
