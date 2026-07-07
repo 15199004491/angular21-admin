@@ -6,6 +6,13 @@ A **from-scratch** Angular admin platform for factory and real estate resource m
 
 This is a production-ready factory management system built **entirely from zero**. It provides comprehensive factory operations management, including factory list, orders, regional management, and real estate resource management modules.
 
+## Project Preview
+
+![alt text](images/100eb646-53e0-4c70-9f2e-cbb2a0487777.png)
+![alt text](images/70942ba6-ebc4-411f-9aec-d5fed5351a34.png)
+![alt text](images/9a552bb8-83c3-44ef-8c5a-79b300da7338.png)
+![alt text](images/6a6830c9-194f-4812-9d49-bd60cfc8cbb8.png)
+
 ## 🛠️ Tech Stack
 
 | Category | Technology | Version |
